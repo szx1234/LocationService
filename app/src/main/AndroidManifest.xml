@@ -32,7 +32,7 @@
 
         <service android:name="com.amap.api.location.APSService"/>
 
-        <activity android:name=".ui.activity.MyMapActivity">
+        <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

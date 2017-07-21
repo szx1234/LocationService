@@ -20,6 +20,7 @@ import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.example.songzhixin.locationservice.R;
 
@@ -39,9 +40,13 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
     private MapView mMapView;
     private AMap mAMap;
     private UiSettings mUiSettings;
+    MarkerOptions options;
+    Marker marker;
+    PolylineOptions options1;
+    Polyline polyline;
     List<LatLng> latLngs = new ArrayList<LatLng>();
     ;
-    int l = 39;
+    float l = 39;
 
     @BindView(R.id.marker)
     Button addMarker;
@@ -51,6 +56,12 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
 
     @BindView(R.id.location)
     Button startLocation;
+
+    @BindView(R.id.night)
+    Button btn_normal;
+
+    @BindView(R.id.traffic)
+    Button btn_tra;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,6 +104,8 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
     private void setListener() {
         addMarker.setOnClickListener(this);
         drawLine.setOnClickListener(this);
+        btn_normal.setOnClickListener(this);
+        btn_tra.setOnClickListener(this);
         startLocation.setOnClickListener(this);
         mAMap.setOnMarkerClickListener(this);
         mAMap.setOnInfoWindowClickListener(this);
@@ -112,16 +125,40 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.marker:
                 LatLng latLng = new LatLng(39.906901, 116.397972);
-                final Marker marker = mAMap.addMarker(new MarkerOptions().position(latLng).title("北*京").draggable(true));
+                options = new MarkerOptions().position(latLng).title("北*京").draggable(true);
+                marker = mAMap.addMarker(options);
                 break;
             case R.id.download:
-                latLngs.add(new LatLng(l, 116));
-//                if (l == 39)
-                mAMap.addPolyline(new PolylineOptions().
-                        addAll(latLngs).width(10).color(Color.argb(255, 1, 1, 1)));
 
-                l += 1;
+//                options.position();
+//                marker.setPosition(new LatLng(39.999, 116.397972));
+                latLngs.add(new LatLng(l, 116));
+                latLngs.add(new LatLng(l, 117));
+//                latLngs.add(new LatLng(l+1, 118));
+//                if(options1 == null)
+                options1 = new PolylineOptions().
+                        addAll(latLngs).width(10).color(Color.argb(255, 1, 1, 1));
+                if (l == 39)
+                    polyline = mAMap.addPolyline(options1);
+//                mAMap.line
+//                polyline.setPoints();
+//                options1.add(new LatLng(l++, 118));
+//                latLngs.add(new LatLng(l, 117));
+//                polyline.setPoints(latLngs);
+//                l
+//                options1.addAll(latLngs);
+//                l += 1;
                 break;
+            case R.id.night:
+                latLngs = new ArrayList<>();
+                latLngs.add(new LatLng(++l, 117));
+                latLngs.add(new LatLng(++l, 118));
+
+                polyline.setPoints(latLngs);
+                break;
+            case R.id.traffic:
+//                if (polyline.isVisible())
+                 polyline.setVisible(!polyline.isVisible());
             case R.id.location:
                 openLocation();
                 break;

@@ -1,5 +1,6 @@
 package com.example.songzhixin.locationservice.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
@@ -17,11 +18,11 @@ import android.widget.Toast;
  * Created by songzhixin on 2017/7/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener{
+public abstract class BaseActivity extends Activity implements View.OnClickListener{
     /**
      * 是否透明状态栏
      **/
-    private boolean isSetStatusBar = true;
+    private boolean isSetStatusBar = false;
     /**
      * 是否允许全屏
      **/
@@ -53,7 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
         setContentView(mContextView);
-        if (!isAllowScreenRoate) {
+        if (isAllowScreenRoate) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
@@ -130,7 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      * @param str
      */
     protected void showToast(String str) {
-        Toast.makeText(this, "str", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
     /**
