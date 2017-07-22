@@ -18,7 +18,7 @@ import android.widget.Toast;
  * Created by songzhixin on 2017/7/17.
  */
 
-public abstract class BaseActivity extends Activity implements View.OnClickListener{
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener{
     /**
      * 是否透明状态栏
      **/
