@@ -1,5 +1,8 @@
 package com.example.songzhixin.locationservice.ui.activity;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,11 +15,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.songzhixin.locationservice.R;
 import com.example.songzhixin.locationservice.http.Url;
 import com.example.songzhixin.locationservice.weight.App;
@@ -25,9 +26,6 @@ import com.example.songzhixin.locationservice.weight.App;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by songzhixin on 2017/7/19.
@@ -40,11 +38,9 @@ public class LoginActivity extends BaseActivity {
     private String password;
     private Button mBtn_login;
     private TextView mBtn_register;
-    RequestQueue mQueue;
 
     @Override
     public void initParms(Bundle bundle) {
-
     }
 
     @Override
@@ -63,7 +59,6 @@ public class LoginActivity extends BaseActivity {
     public void intiViewAndObject() {
         mBtn_login = (Button) findViewById(R.id.btn_login);
         mBtn_register = (TextView) findViewById(R.id.register);
-        mQueue = Volley.newRequestQueue(this);
         mInput_UserName = (AutoCompleteTextView) findViewById(R.id.username);
         mInput_Password = (EditText) findViewById(R.id.password);
     }
@@ -78,7 +73,6 @@ public class LoginActivity extends BaseActivity {
     public void weightClick(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
-//                showToast("点击登陆");
                 login();
                 break;
             case R.id.register:
@@ -92,6 +86,44 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void doBusiness() {
+        if (!TextUtils.isEmpty(App.getToken())) {
+            StringRequest request = new StringRequest(Request.Method.POST, Url.getUserProfile(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject object = new JSONObject(response);
+                                JSONObject body = object.getJSONObject("body");
+                                SharedPreferences.Editor editor = getSharedPreferences("USER_DETAIL", 0).edit();
+                                editor.putString("AVATAR_URL", body.getString("avatar_url"));
+                                editor.putString("USER_NAME", body.getString("user_name"));
+                                editor.putString("NICKNAME", body.getString("nickname"));
+                                editor.commit();
+                                gotoMain();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.w(TAG, "onErrorResponse: " + error.toString() + "无效的token");
+                        }
+                    }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    return ("{\"token\":\"" + App.getToken() + "\"}").getBytes();
+                }
+            };
+            App.getQueue().add(request);
+        }
     }
 
     private void register() {
@@ -102,20 +134,18 @@ public class LoginActivity extends BaseActivity {
             showToast("账号或密码不能为空！");
             return;
         }
-        final Map<String, String> params = new HashMap<>();
-        params.put("user_name", "szx");
-        params.put("password", "szx");
 
         StringRequest request = new StringRequest(Request.Method.POST, Url.getUrlLogin(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        onSucess(response);
+                        onSuccess(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        showToast("网络错误！");
                         error.printStackTrace();
                     }
                 }) {
@@ -131,10 +161,10 @@ public class LoginActivity extends BaseActivity {
                 return ("{\"user_name\":\"" + username + "\",\"password\":\"" + password + "\"}").getBytes();
             }
         };
-        mQueue.add(request);
+        App.getQueue().add(request);
     }
 
-    private void onSucess(String response) {
+    private void onSuccess(String response) {
         JSONObject object = null;
         String desc = "";
         String token = "";
@@ -142,26 +172,21 @@ public class LoginActivity extends BaseActivity {
         try {
             object = new JSONObject(response);
             status_code = Integer.valueOf(object.getString("status_code"));
-            /**
-             * 登陆成功
-             * TODO 增加跳转逻辑
-             */
             if (status_code == 1) {
                 JSONObject object_body = object.getJSONObject("body");
                 token = object_body.getString("token");
-                Log.w("token", "onSucess: " + token);
                 App.setToken(token);
                 showToast("登陆成功");
+                gotoMain();
                 return;
             }
             /**
              * 登陆失败
              */
             desc = new String(object.getString("desc"));
-            if (desc != null){
+            if (desc != null) {
                 switch (desc) {
                     case "用户名不存在":
-//                        mInput_UserName.setText("");
                         break;
                     case "密码错误":
                         mInput_Password.setText("");
@@ -175,6 +200,13 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
             showToast("解析错误");
         }
+    }
+
+    private void gotoMain() {
+        finish();
+//        overridePendingTransition(R.anim.slide_right_in, R.anim.slide_right_out);
+//        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        goToActivity(MainActivity.class);
     }
 
     private boolean checkInput() {

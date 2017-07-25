@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Toast;
  */
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener{
+    Handler handler = new Handler();
     /**
      * 是否透明状态栏
      **/
@@ -189,5 +191,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy()");
+    }
+
+    protected void goToActivity (Class clz) {
+        Intent intent = new Intent(this, clz);
+        startActivity(intent);
     }
 }

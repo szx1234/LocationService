@@ -1,23 +1,26 @@
 package com.example.songzhixin.locationservice.common;
 
+import com.example.songzhixin.locationservice.ui.activity.MainActivity;
+
+import java.lang.reflect.Method;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by songzhixin on 2017/7/21.
  */
 
 public class Test {
     public static void main(String args[]) {
-        switch ("haha") {
-            case "nima":
-                System.out.println("nima");
-                break;
-            case "haha":
-                System.out.println("haha");
-                break;
-            case "asdf":
-                System.out.println("asdf");
-                break;
-            default:
-                break;
+        try {
+            Const m = new Const();
+            Class c = Class.forName("com.example.songzhixin.locationservice.ui.activity.MainActivity");
+//            Class c = m.getClass();
+            for (Method method : c.getMethods()) {
+                System.out.println(method.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

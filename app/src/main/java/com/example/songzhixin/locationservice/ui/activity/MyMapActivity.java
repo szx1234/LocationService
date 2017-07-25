@@ -45,7 +45,6 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
     PolylineOptions options1;
     Polyline polyline;
     List<LatLng> latLngs = new ArrayList<LatLng>();
-    ;
     float l = 39;
 
     @BindView(R.id.marker)
@@ -63,6 +62,9 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
     @BindView(R.id.traffic)
     Button btn_tra;
 
+    @BindView(R.id.satellite)
+    Button btn_addPoint;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +79,6 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
         mMapView.onCreate(savedInstanceState);
 
     }
-
-
     /**
      * 初始化控件或者其他类
      */
@@ -106,6 +106,7 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
         drawLine.setOnClickListener(this);
         btn_normal.setOnClickListener(this);
         btn_tra.setOnClickListener(this);
+        btn_addPoint.setOnClickListener(this);
         startLocation.setOnClickListener(this);
         mAMap.setOnMarkerClickListener(this);
         mAMap.setOnInfoWindowClickListener(this);
@@ -150,11 +151,14 @@ public class MyMapActivity extends AppCompatActivity implements View.OnClickList
 //                l += 1;
                 break;
             case R.id.night:
-                latLngs = new ArrayList<>();
+//                latLngs = new ArrayList<>();
                 latLngs.add(new LatLng(++l, 117));
                 latLngs.add(new LatLng(++l, 118));
 
                 polyline.setPoints(latLngs);
+                break;
+            case R.id.satellite:
+                latLngs.add(new LatLng(++l, 118));
                 break;
             case R.id.traffic:
 //                if (polyline.isVisible())
